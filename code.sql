@@ -1,4 +1,4 @@
---View of table
+/*View of table*/
 
 CREATE VIEW popular_artist_tours AS
 SELECT 
@@ -15,7 +15,7 @@ HAVING
     SUM(ct.ticket_price) > 200;
 
 
---Before trigger
+/*Before trigger*/
 
 DELIMITER $$
 
@@ -23,9 +23,7 @@ CREATE TRIGGER before_insert_concert_tickets
 BEFORE INSERT ON concert_tickets
 FOR EACH ROW
 BEGIN
-    -- Check if the ticket price is greater than the allowed maximum ($500)
     IF NEW.ticket_price > 500 THEN
-        -- If it is, set it to the maximum allowed price
         SET NEW.ticket_price = 500;
     END IF;
 END$$
@@ -33,7 +31,7 @@ END$$
 DELIMITER ;
 
 
---After trigger
+/*After trigger*/
 
 DELIMITER $$
 
@@ -58,8 +56,7 @@ END$$
 
 DELIMITER ;
 
-
---Stored Function
+/*Stored Function*/
 
 DELIMITER $$
 
@@ -68,24 +65,20 @@ RETURNS INT
 DETERMINISTIC
 BEGIN
     DECLARE seat_count INT;
-
-    -- Initialize the count to 0
     SET seat_count = 0;
 
-    -- Calculate the total number of tickets sold for the given concert_id
     SELECT COUNT(ticket_id)
     INTO seat_count
     FROM concert_tickets
     WHERE concert_id = concert_id_input;
 
-    -- Return the total number of occupied seats
     RETURN seat_count;
 END$$
 
 DELIMITER ;
 
 
---Stored Procedure
+/*Stored Procedure*/
 
 DELIMITER $$
 
