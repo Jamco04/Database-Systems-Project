@@ -2,10 +2,10 @@ CREATE TABLE artists (
   artist_id INTEGER(10) PRIMARY KEY,  
   artist_name VARCHAR(128),
   genre VARCHAR(64),
-  debut_year YEAR
-
-   total_revenue DECIMAL(10, 2) DEFAULT 0
+  debut_year YEAR,
+  total_revenue DECIMAL(10, 2) DEFAULT 0
 );
+
 
 CREATE TABLE albums (
   album_id INTEGER(10) PRIMARY KEY,
