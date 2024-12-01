@@ -39,19 +39,19 @@ CREATE TRIGGER after_insert_concert_tickets
 AFTER INSERT ON concert_tickets
 FOR EACH ROW
 BEGIN
-    DECLARE artist_id INT;
+    DECLARE found_artist_id INT;
 
-table
     SELECT ca.artist_id
-    INTO artist_id
+    INTO found_artist_id
     FROM concert_artists ca
     WHERE ca.concert_id = NEW.concert_id
     LIMIT 1;
 
-
-    UPDATE artists
-    SET total_revenue = IFNULL(total_revenue, 0) + NEW.ticket_price
-    WHERE artist_id = artist_id;
+    IF found_artist_id IS NOT NULL THEN
+        UPDATE artists
+        SET total_revenue = IFNULL(total_revenue, 0) + NEW.ticket_price
+        WHERE artist_id = found_artist_id;
+    END IF;
 END$$
 
 DELIMITER ;
