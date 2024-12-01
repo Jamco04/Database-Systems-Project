@@ -1,5 +1,4 @@
-/*View of table*/
-
+-- View
 CREATE VIEW popular_artist_tours AS
 SELECT 
     a.artist_name,
@@ -14,9 +13,7 @@ GROUP BY
 HAVING 
     SUM(ct.ticket_price) > 200;
 
-
-/*Before trigger*/
-
+-- BEFORE Trigger
 DELIMITER $$
 
 CREATE TRIGGER before_insert_concert_tickets
@@ -30,34 +27,22 @@ END$$
 
 DELIMITER ;
 
-
-/*After trigger*/
-
+-- AFTER Trigger
 DELIMITER $$
 
 CREATE TRIGGER after_insert_concert_tickets
 AFTER INSERT ON concert_tickets
 FOR EACH ROW
 BEGIN
-    DECLARE found_artist_id INT;
-
-    SELECT ca.artist_id
-    INTO found_artist_id
-    FROM concert_artists ca
-    WHERE ca.concert_id = NEW.concert_id
-    LIMIT 1;
-
-    IF found_artist_id IS NOT NULL THEN
-        UPDATE artists
-        SET total_revenue = IFNULL(total_revenue, 0) + NEW.ticket_price
-        WHERE artist_id = found_artist_id;
-    END IF;
+    UPDATE artists a
+    JOIN concert_artists ca ON a.artist_id = ca.artist_id
+    SET a.total_revenue = IFNULL(a.total_revenue, 0) + NEW.ticket_price
+    WHERE ca.concert_id = NEW.concert_id;
 END$$
 
 DELIMITER ;
 
-/*Stored Function*/
-
+-- Stored Function
 DELIMITER $$
 
 CREATE FUNCTION total_occupied_seats(concert_id_input INT)
@@ -77,9 +62,7 @@ END$$
 
 DELIMITER ;
 
-
-/*Stored Procedure*/
-
+-- Stored Procedure
 DELIMITER $$
 
 CREATE PROCEDURE check_and_add_song_album(
@@ -96,7 +79,7 @@ BEGIN
     FROM songs
     WHERE song_id = input_song_id AND album_id = input_album_id;
 
-    IF song_exists = 0 THEN
+    IF song_exists = 0 AND input_album_id IS NOT NULL THEN
         UPDATE songs
         SET album_id = input_album_id
         WHERE song_id = input_song_id;
@@ -113,5 +96,3 @@ BEGIN
 END$$
 
 DELIMITER ;
-
-
